@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="1" skipped="2" tests="5" time="181.108" timestamp="2025-02-12T19:19:30.507312+05:30" hostname="DELL7490-034"><testcase classname="AltrrAutomation.test_demo" name="test_loginone" time="100.486"><failure message="selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {&quot;method&quot;:&quot;css selector&quot;,&quot;selector&quot;:&quot;[id=&quot;basic_password&quot;]&quot;}&#10;  (Session info: chrome=132.0.6834.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception&#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x010774A3+25091]&#10;&#09;(No symbol) [0x00FFDC04]&#10;&#09;(No symbol) [0x00EDB373]&#10;&#09;(No symbol) [0x00F1F4DC]&#10;&#09;(No symbol) [0x00F1F65B]&#10;&#09;(No symbol) [0x00F5D8E2]&#10;&#09;(No symbol) [0x00F41F54]&#10;&#09;(No symbol) [0x00F5B49E]&#10;&#09;(No symbol) [0x00F41CA6]&#10;&#09;(No symbol) [0x00F131D5]&#10;&#09;(No symbol) [0x00F1435D]&#10;&#09;GetHandleVerifier [0x013707C3+3142947]&#10;&#09;GetHandleVerifier [0x01381A2B+3213195]&#10;&#09;GetHandleVerifier [0x0137C412+3191154]&#10;&#09;GetHandleVerifier [0x01118720+685184]&#10;&#09;(No symbol) [0x01006E1D]&#10;&#09;(No symbol) [0x01003E18]&#10;&#09;(No symbol) [0x01003FB6]&#10;&#09;(No symbol) [0x00FF66F0]&#10;&#09;BaseThreadInitThunk [0x7742FCC9+25]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x7774809E+286]&#10;&#09;RtlGetAppContainerNamedObjectPath [0x7774806E+238]">setup = None
+
+    def test_loginone(setup):
+    
+        driver.get("https://uat.app.trythat.ai/")
+        # Search_one = driver.find_element(by=By.NAME, value="q")
+        # Search_one.send_keys("mobile")
+        # driver.implicitly_wait(90)
+        # search_button= driver.find_element(by=By.NAME, value="https://uat.app.trythat.ai/")
+        # search_button.click()
+        email_field = driver.find_element(by=By.NAME, value="mobile_email")
+        email_field.send_keys("vipulkadam.vk9@gmail.com")
+        time.sleep(2)
+        email_field = driver.find_element(by=By.XPATH, value="//span[contains(text(), 'Via Password')]")
+        email_field.click()
+        time.sleep(3)
+&gt;       pass_field = driver.find_element(by=By.ID, value= "basic_password")
+
+AltrrAutomation\test_demo.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:748: in find_element
+    return self.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+.venv\Lib\site-packages\selenium\webdriver\remote\webdriver.py:354: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x000001869238AF00&gt;
+response = {'status': 404, 'value': '{"value":{"error":"no such element","message":"no such element: Unable to locate element: {\...\n\\tRtlGetAppContainerNamedObjectPath [0x7774809E+286]\\n\\tRtlGetAppContainerNamedObjectPath [0x7774806E+238]\\n"}}'}
+
+    def check_response(self, response: Dict[str, Any]) -&gt; None:
+        """Checks that a JSON response from the WebDriver does not have an
+        error.
+    
+        :Args:
+         - response - The JSON response from the WebDriver server as a dictionary
+           object.
+    
+        :Raises: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                import json
+    
+                try:
+                    value = json.loads(value_json)
+                    if len(value) == 1:
+                        value = value["value"]
+                    status = value.get("error", None)
+                    if not status:
+                        status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                        message = value.get("value") or value.get("message")
+                        if not isinstance(message, str):
+                            value = message
+                            message = message.get("message")
+                    else:
+                        message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: Type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response["value"]
+        if isinstance(value, str):
+            raise exception_class(value)
+        if message == "" and "message" in value:
+            message = value["message"]
+    
+        screen = None  # type: ignore[assignment]
+        if "screen" in value:
+            screen = value["screen"]
+    
+        stacktrace = None
+        st_value = value.get("stackTrace") or value.get("stacktrace")
+        if st_value:
+            if isinstance(st_value, str):
+                stacktrace = st_value.split("\n")
+            else:
+                stacktrace = []
+                try:
+                    for frame in st_value:
+                        line = frame.get("lineNumber", "")
+                        file = frame.get("fileName", "&lt;anonymous&gt;")
+                        if line:
+                            file = f"{file}:{line}"
+                        meth = frame.get("methodName", "&lt;anonymous&gt;")
+                        if "className" in frame:
+                            meth = f"{frame['className']}.{meth}"
+                        msg = "    at %s (%s)"
+                        msg = msg % (meth, file)
+                        stacktrace.append(msg)
+                except TypeError:
+                    pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if "data" in value:
+                alert_text = value["data"].get("text")
+            elif "alert" in value:
+                alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)  # type: ignore[call-arg]  # mypy is not smart enough here
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"css selector","selector":"[id="basic_password"]"}
+E         (Session info: chrome=132.0.6834.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+E       Stacktrace:
+E       	GetHandleVerifier [0x010774A3+25091]
+E       	(No symbol) [0x00FFDC04]
+E       	(No symbol) [0x00EDB373]
+E       	(No symbol) [0x00F1F4DC]
+E       	(No symbol) [0x00F1F65B]
+E       	(No symbol) [0x00F5D8E2]
+E       	(No symbol) [0x00F41F54]
+E       	(No symbol) [0x00F5B49E]
+E       	(No symbol) [0x00F41CA6]
+E       	(No symbol) [0x00F131D5]
+E       	(No symbol) [0x00F1435D]
+E       	GetHandleVerifier [0x013707C3+3142947]
+E       	GetHandleVerifier [0x01381A2B+3213195]
+E       	GetHandleVerifier [0x0137C412+3191154]
+E       	GetHandleVerifier [0x01118720+685184]
+E       	(No symbol) [0x01006E1D]
+E       	(No symbol) [0x01003E18]
+E       	(No symbol) [0x01003FB6]
+E       	(No symbol) [0x00FF66F0]
+E       	BaseThreadInitThunk [0x7742FCC9+25]
+E       	RtlGetAppContainerNamedObjectPath [0x7774809E+286]
+E       	RtlGetAppContainerNamedObjectPath [0x7774806E+238]
+
+.venv\Lib\site-packages\selenium\webdriver\remote\errorhandler.py:229: NoSuchElementException</failure></testcase><testcase classname="AltrrAutomation.test_demo" name="test_registration_negative" time="0.000"><skipped type="pytest.skip" message="Skipping this test temporarily">C:\Users\pc\PycharmProjects\pythonProject\AltrrAutomation\test_demo.py:114: Skipping this test temporarily</skipped></testcase><testcase classname="AltrrAutomation.test_demo" name="test_loginpositive" time="0.000"><skipped type="pytest.skip" message="Skipping this test temporarily">C:\Users\pc\PycharmProjects\pythonProject\AltrrAutomation\test_demo.py:140: Skipping this test temporarily</skipped></testcase><testcase classname="AltrrAutomation.test_view_all_transaction_unlock_make_payment_flow" name="test_view_all_transaction_unlock_make_payment_flow" time="52.890" /><testcase classname="test_pom" name="test_login" time="22.390" /></testsuite></testsuites>
